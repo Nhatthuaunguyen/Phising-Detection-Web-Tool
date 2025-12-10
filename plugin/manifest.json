@@ -1,0 +1,20 @@
+{
+    "manifest_version": 3,
+    "name": "URL Security Checker",
+    "version": "1.1",
+    "description": "Checks URLs for security and warns the user.",
+    "permissions": [
+        "tabs",
+        "storage",
+        "webRequest"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_title": "URL Security Checker"
+    }
+}
