@@ -1,20 +1,21 @@
 {
     "manifest_version": 3,
-    "name": "URL Security Checker",
-    "version": "1.1",
-    "description": "Checks URLs for security and warns the user.",
+    "name": "AI Phishing Detector",
+    "version": "2.0",
+    "description": "Detects phishing using a Hybrid ML Backend.",
     "permissions": [
         "tabs",
         "storage",
         "webRequest"
     ],
     "host_permissions": [
-        "<all_urls>"
+        "<all_urls>",
+        "http://127.0.0.1:5000/*"
     ],
     "background": {
         "service_worker": "background.js"
     },
     "action": {
-        "default_title": "URL Security Checker"
+        "default_title": "AI Security Checker"
     }
 }

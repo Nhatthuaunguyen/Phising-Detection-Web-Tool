@@ -1,52 +1,50 @@
 // checks.js
+// Kết nối tới Backend Python để xử lý logic (AI + Rules)
 
-// Heuristic checks
-function heuristicCheck(url) {
-    const reasons = [];
-    let parsedUrl;
+const BACKEND_API = "http://127.0.0.1:5000/analyze";
 
-    try {
-        parsedUrl = new URL(url);
-    } catch (e) {
-        return ["Invalid URL format"];
-    }
-
-    // 1. Kiểm tra độ dài URL
-    if (url.length > 200) {
-        reasons.push("URL is unusually long");
-    }
-
-    // 2. Kiểm tra IP (Ví dụ: http://1.2.3.4)
-    const ipRegex = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
-    if (ipRegex.test(parsedUrl.hostname)) {
-        reasons.push("Hostname is an IP address (unsafe)");
-    }
-    // 3. Kiểm tra ký tự đặc biệt trong hostname
-    const specialCharRegex = /[!@#$%^&*(),?":{}|<>]/;
-    if (specialCharRegex.test(parsedUrl.hostname)) {
-        reasons.push("Hostname contains special characters");
-    }
-
-    return reasons;
-}
-
-
-
-// Domain & SSL checks
-async function domainSSLCheck(url) {
-    const reasons = [];
-    if (!url.startsWith('https')) {
-        reasons.push("Connection is not secure (HTTP only)");
-    }
-    return reasons;
-}
-
-// Main check function
 async function checkURL(url) {
-    const allReasons = [];
+    try {
+        console.log("Sending to AI Backend...", url);
+        
+        // 1. Gửi URL về Python Backend
+        const response = await fetch(BACKEND_API, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ url: url })
+        });
 
-    // Tổng hợp lỗi từ các hàm con
-    allReasons.push(...heuristicCheck(url));
-    allReasons.push(...await domainSSLCheck(url));
-    return allReasons;
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("AI Result:", data);
+
+        // 2. Xử lý kết quả trả về từ Backend
+        // Backend sẽ trả về: { is_unsafe: true/false, reasons: [...] }
+        if (data.is_unsafe) {
+            return data.reasons; // Trả về danh sách lỗi cho người dùng
+        }
+
+        return []; // Mảng rỗng nghĩa là An toàn
+
+    } catch (error) {
+        console.error("Backend Connection Failed:", error);
+        
+        // --- FAIL-SAFE (DỰ PHÒNG) ---
+        // Nếu Server Python chưa bật hoặc bị lỗi, ta kiểm tra sơ bộ tại Client
+        // để tránh chặn nhầm hoặc bỏ lọt lỗi cơ bản.
+        
+        const fallbackReasons = [];
+        
+        // Kiểm tra HTTP cơ bản nếu không kết nối được server
+        if (!url.startsWith("https")) {
+            fallbackReasons.push("Warning: Backend unavailable & Connection is not secure (HTTP)");
+        }
+
+        return fallbackReasons;
+    }
 }
