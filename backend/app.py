@@ -70,6 +70,10 @@ def calculate_phishing_score(url):
     total_score = rules_score + (ml_prob * 100)
     return total_score, reasons, ml_prob
 
+@app.route('/', methods=['GET'])
+def home():
+    return "Phishing Detection Backend is Running on Vercel!"
+
 @app.route('/analyze', methods=['POST'])
 def analyze_url():
     data = request.get_json()
