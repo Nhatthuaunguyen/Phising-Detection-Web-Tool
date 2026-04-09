@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Warning - Danger Ahead</title>
+  <link rel="stylesheet" href="warning.css">
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div class="container">
+      <div class="warning-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 16h2v2h-2zm0-6h2v4h-2z"/>
+        </svg>
+      </div>
+      <h1>Suspicious Link Blocked</h1>
+      <p class="subtitle">Our phishing detection engine has flagged this page as potentially dangerous. It may attempt to steal your credentials or install malware.</p>
+      
+      <div class="reason-box">
+        <span class="reason-box-title">Risk Analysis</span>
+        <ul id="reasons-list">
+            <!-- Reasons will be injected here via javascript -->
+        </ul>
+      </div>
+
+      <p class="prompt">Visiting this website is highly discouraged.</p>
+      <div class="buttons">
+          <button id="no">Back to Safety</button>
+          <button id="yes">Proceed Anyway (Unsafe)</button>
+      </div>
+  </div>
+  <script src="warning.js"></script>
+</body>
+</html>
