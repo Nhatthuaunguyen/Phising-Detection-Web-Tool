@@ -70,7 +70,7 @@ export default function App() {
       <Text style={styles.title}>AI Security Checker</Text>
       <Text style={styles.sub}>Waiting to intercept links...</Text>
 
-      {/* Simulation Button for Testing since we can't easily click a link in Zalo right now */}
+      {/* Simulation Button for Testing since we can't easily click a link in Zalo */}
       <TouchableOpacity
         style={styles.simulateBtn}
         onPress={() => handleIncomingURL("http://1.2.3.4/paypal-login")}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, Linking, SafeAreaView, TextInput } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 
-const BACKEND_API = "https://phising-detection-web-tool-backend.vercel.app/";
+const BACKEND_API = "https://phising-detection-web-tool-backend.vercel.app/analyze";
 
 export default function App() {
   const [modalState, setModalState] = useState('none'); // 'none', 'unsafe', 'safe', 'error'
@@ -70,16 +70,16 @@ export default function App() {
 
       {/* Manual Check Box */}
       <View style={styles.inputContainer}>
-        <TextInput 
-          style={styles.input} 
-          placeholder="Paste or type a suspicious link here..." 
+        <TextInput
+          style={styles.input}
+          placeholder="Paste or type a suspicious link here..."
           placeholderTextColor="#666"
           value={manualUrl}
           onChangeText={setManualUrl}
           autoCapitalize="none"
         />
-        <TouchableOpacity 
-          style={styles.checkBtn} 
+        <TouchableOpacity
+          style={styles.checkBtn}
           onPress={() => {
             if (manualUrl.trim()) {
               handleIncomingURL(manualUrl.trim());
@@ -94,8 +94,8 @@ export default function App() {
       <TouchableOpacity style={styles.simulateBtn} onPress={() => handleIncomingURL("http://1.2.3.4/paypal-login")}>
         <Text style={styles.btnText}>Simulate Suspicious Web Click</Text>
       </TouchableOpacity>
-      
-      <View style={{marginTop: 15}}>
+
+      <View style={{ marginTop: 15 }}>
         <TouchableOpacity style={styles.simulateSafeBtn} onPress={() => handleIncomingURL("https://www.google.com")}>
           <Text style={styles.btnText}>Simulate Safe Web Click</Text>
         </TouchableOpacity>
@@ -105,11 +105,11 @@ export default function App() {
       <Modal visible={modalState !== 'none'} transparent animationType="slide">
         <View style={styles.modalBg}>
           <View style={[
-            styles.modalCard, 
+            styles.modalCard,
             modalState === 'safe' && { borderColor: 'rgba(74, 222, 128, 0.3)' },
             modalState === 'error' && { borderColor: 'rgba(250, 204, 21, 0.3)' }
           ]}>
-            
+
             {/* UNSAFE MODAL */}
             {modalState === 'unsafe' && (
               <>
