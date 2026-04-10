@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, Linking, SafeAreaView } from 'react-native';
 
-const BACKEND_API = "http://192.168.1.9:5000/analyze"; // Updated to your computer's local IP for real device
+const BACKEND_API = "https://phising-detection-web-tool.vercel.app/analyze";
 
 export default function App() {
   const [warningVisible, setWarningVisible] = useState(false);
@@ -32,9 +32,9 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: url })
       });
-      
+
       const data = await response.json();
-      
+
       if (data.is_unsafe) {
         setBlockedUrl(url);
         setReasons(data.reasons || ["Phishing patterns detected"]);
@@ -69,10 +69,10 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>AI Security Checker</Text>
       <Text style={styles.sub}>Waiting to intercept links...</Text>
-      
+
       {/* Simulation Button for Testing since we can't easily click a link in Zalo right now */}
-      <TouchableOpacity 
-        style={styles.simulateBtn} 
+      <TouchableOpacity
+        style={styles.simulateBtn}
         onPress={() => handleIncomingURL("http://1.2.3.4/paypal-login")}
       >
         <Text style={styles.btnText}>Simulate Suspicous Link Click</Text>
@@ -87,7 +87,7 @@ export default function App() {
             <Text style={styles.modalSub}>
               Our engine flagged this app interaction as potentially dangerous.
             </Text>
-            
+
             <View style={styles.reasonBox}>
               <Text style={styles.reasonTitle}>RISK ANALYSIS</Text>
               {reasons.map((r, i) => (
@@ -99,7 +99,7 @@ export default function App() {
               <TouchableOpacity style={styles.backBtn} onPress={handleBackToSafe}>
                 <Text style={styles.backBtnText}>Back to Safety</Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity style={styles.proceedBtn} onPress={handleProceed}>
                 <Text style={styles.proceedBtnText}>Proceed Anyway</Text>
               </TouchableOpacity>
@@ -117,12 +117,12 @@ const styles = StyleSheet.create({
   sub: { color: '#a1a1aa', marginTop: 10, marginBottom: 40 },
   simulateBtn: { backgroundColor: '#333', padding: 15, borderRadius: 8 },
   btnText: { color: '#fff' },
-  
+
   modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'flex-end' },
-  modalCard: { 
-    backgroundColor: '#1E1419', 
-    padding: 30, 
-    borderTopLeftRadius: 24, 
+  modalCard: {
+    backgroundColor: '#1E1419',
+    padding: 30,
+    borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     borderWidth: 1,
     borderColor: 'rgba(255, 99, 105, 0.15)',
