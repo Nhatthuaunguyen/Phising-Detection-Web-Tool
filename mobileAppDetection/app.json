@@ -9,7 +9,17 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aunguyennhatthu.mobileAppDetection",
+      "associatedDomains": [
+        "applinks:*.facebook.com",
+        "applinks:*.viber.com",
+        "applinks:*.t.me",
+        "applinks:*.telegram.me",
+        "applinks:*.whatsapp.com",
+        "applinks:*.twitter.com",
+        "applinks:*.instagram.com"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -34,6 +44,17 @@
           ],
           "category": [
             "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "SEND",
+          "data": [
+            {
+              "mimeType": "text/plain"
+            }
+          ],
+          "category": [
             "DEFAULT"
           ]
         }

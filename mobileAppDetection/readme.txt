@@ -1,0 +1,1 @@
+để tạo ra được file apk - chạy lệnh này trong terminal: .\gradlew assembleRelease

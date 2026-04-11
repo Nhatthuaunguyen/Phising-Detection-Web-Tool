@@ -69,14 +69,17 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>AI Security Checker</Text>
       <Text style={styles.sub}>Waiting to intercept links...</Text>
-
-      {/* Simulation Button for Testing since we can't easily click a link in Zalo */}
+{/* cái đoạn này nè, thay vì để một link thì mình để một list nhiều link rồi mình random nó ra để check xem nó thể nào
+sau random xong thì display nó lên cái nút simulate check supicious link, 
+mỗi lần bấm nó sẽ check 1 link khác nhau và gen ra cái link đó
+      //Simulation Button for Testing since we can't easily click a link in Zalo *
       <TouchableOpacity
         style={styles.simulateBtn}
         onPress={() => handleIncomingURL("http://1.2.3.4/paypal-login")}
       >
         <Text style={styles.btnText}>Simulate Suspicous Link Click</Text>
       </TouchableOpacity>
+*/}
 
       {/* Warning Modal (Matches Web CSS aesthetic) */}
       <Modal visible={warningVisible} transparent animationType="slide">
