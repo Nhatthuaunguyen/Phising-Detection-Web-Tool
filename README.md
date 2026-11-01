@@ -1,96 +1,171 @@
-# Phising-Detection-Web-Tool
+Installation Guide
 
-implementation plan
+1. Project Directory Structure
+Phising-Detection-Web-Tool/
+├── backend/ # Flask Python Backend API
+│ ├── app.py # Main server and endpoints (/analyze, /analyze-deep)
+│ ├── ml_model.py # Feature extraction and ML prediction loader
+│ ├── llm_analyzer.py # Gemini API integration & logo/content crawlers
+│ ├── scoring.py # Weighting engine & configuration manager
+│ ├── requirements.txt # Python dependencies
+│ └── models/ # model_training_ml.pkl
+│ ├── evaluation/ # Evaluate fast path system, full path system
+├── plugin/ # Chrome Extension (Manifest V3)
+│ ├── manifest.json # Extension permissions and configurations
+│ ├── background.js # Service worker intercepting web requests
+│ ├── checks.js # API connection client & offline fallback heuristics
+│ └── warning.html/js/css # Redirection warning screen
+├── mobileAppDetection/ # React Native Expo Mobile App
+│ ├── App.js # Main application UI and scanner views
+│ ├── package.json # Node dependencies & Expo scripts
+│ └── assets/ # Icons and splash images
+└── colab_notebooks/ # Training scripts & datasets
+├── machine_learning_integration.ipynb # Notebook used to train model in Google colab
+└── model_feature_config.json # Configuration list of ML features
+2. Prerequisites & Development Environment
+To run the full suite locally, you will need the following tools installed on your development
+machine:
+Node.js Version 18.0.0 or higher ([Download Node.js](https://nodejs.org/))
+Python: Version 3.9 to 3.12 ([Download Python](https://www.python.org/))
+Google Chrome: Needed to test the browser extension unpacked.
+Expo Go: To run the mobile app, install Expo Go on
 
-# Comprehensive Hybrid Phishing Detection System
+3. Step-by-Step Setup Guide
+3.1. Set Up and Run the Backend Server
+The backend runs on Python Flask. It is preconfigured with a trained ML model and a default
+pool of Gemini API keys for development.
+Step 1: Initialize the Virtual Environment
+Navigate to the root directory of the project and activate the virtual environment (`venv` is
+already included in the repository structure).
+● On Windows (PowerShell):
+If venv is not initialized, run:
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+● On Windows (Command Prompt):
+.\venv\Scripts\activate.bat
+● On macOS/Linux (In bash):
+source venv/bin/activate
 
-This document outlines the implementation plan to build out the full phishing detection system requested. We will expand the existing basic backend and extension, and introduce a new React Native mobile app, advanced analysis layers, Machine Learning, and LLM integrations.
+Step 2: Install Python Dependencies
+In terminal:
+cd backend
+pip install -r requirements.txt
+Step 3: Training model
+In colab notebook folder, upload file machine_learning_integration.ipynb into google colab
+Run each cell to train the data. Then, the result of the best-performing and most accurate list
+of input feature names is generated and saved as a file model_training_ml.pkl for download
+and put into the folder /backend/models/machine_learning_result to use in the backend.
+Upload file evaluation_ml_layer.ipynb to google colab. Run each cell and import file
+model_training_ml.pkl to perform evaluation of the machine learning layer and find the best
+threshold of the machine learning layer. After that, extract the evaluation into file
+feature_config.json, model_feature_config.json, scoring_config.json and put it into the folder
+/backend/models/machine_learning_result to use in the backend.
 
-## User Review Required
+Step 4: Run machine learning layer in the backend, perform evaluate fast path and find
+the grey zone for perform LLM
+To run the machine learning layer in the backend, run:
+Terminal:
+cd backend
+py ml_model.py
+To evaluate the fast path and compare metrics first 4 layers:
+Terminal:
+cd backend\evaluation
+py evaluate_fast_path.py
+To find the grey zone for trigger LLM, run:
+Terminal:
+cd backend\evaluation
+py find_optimal_threshold.py
+Step 5: Configure API Keys (Optional)
+Open [backend/llm_analyzer.py](file:/backend/llm_analyzer.py) to inspect or modify the
+Gemini API keys. The system uses a fallback rotation mechanism.
+How to create google api key:
+Open the Google api key website: https://aistudio.google.com/app/apikey
+Choose tab 'API Keys'
+Click button 'Create API key'
+Name the key, Choose an imported project - create new project
+Click create key
+Click copy key and paste your own Gemini API keys directly into the `API_KEYS` list:
+API_KEYS = [
+"YOUR_GEMINI_API_KEY_1",
+"YOUR_GEMINI_API_KEY_2",
+]
+After input api key, run
+Terminal:
+cd backend
+py llm_analyzer.py
 
-> [!WARNING]
-> Before we proceed, please review the proposed architecture and integration choices. Specifically, we will need access to API keys for any real Threat Intelligence feeds (like Google Safe Browsing) and LLM models (e.g., Google Gemini or OpenAI) to integrate into the local backend.
+Step 6: Find the final score (deep path score)
+After prepare all layers, run
+cd backend
+py scoring.py
+Step 7: Evaluate 5 layers
+run:
+cd backend\evaluation
+py evaluate_deep_path_full.py
+Step 8: Start the Backend Server
+Run the Flask application at backend direction:
+terminal:
+py app.py
+The server will boot up locally at: http://127.0.0.1:5000
+To verify it is active, open `http://127.0.0.1:5000/` in your browser. You should see a JSON
+payload listing the status as `"running"` and confirming the ML model is loaded.
+3.2. Load the Chrome Extension (Plugin)
+The Chrome extension monitors your active browser tabs and blocks unsafe websites by
+communicating with the backend.
+1. Open Google Chrome.
+2. Navigate to the extensions page by typing chrome://extensions/ in the URL bar.
+3. Enable Developer mode using the toggle switch in the upper-right corner.
+4. Click the Load unpacked button in the top-left corner.
+5. In the file explorer popup, select the plugin directory from this repository.
+6. The extension is now active!
 
-> [!IMPORTANT]
-> Based on your feedback, **Model Training (Phase 3) and Evaluation/Testing (Phases 5 & 6) will be designed for Google Colab**. We will prepare Jupyter Notebook (`.ipynb`) scripts for you to run in Colab. Once training and evaluation are complete, you will simply download the exported model (e.g., `.pkl`) and insert it into the local backend to run the system.
+How to Test:
+Ensure the Python Backend is running.
+Try opening a domain in Chrome. If the backend classifies it as malicious (e.g.
+`http://fake-login-bank.net`), you will be immediately redirected to the built-in warning page
+(`warning.html`) showing the safety breakdown score.
 
-## Proposed Changes
+3.3. Run the Mobile Application (Expo)
+The mobile app provides a search-bar scanner, deep-link intercept simulation, and local
+fallback heuristics.
 
----
+Step 1: Install Node Dependencies
+Navigate into the mobile project folder and run `npm install`:
+bash
+cd mobileAppDetection
+npm install
+Step 2: Configure the Backend API Connection
+By default, the mobile app points to `http://127.0.0.1:5000/analyze` in
+[mobileAppDetection/App.js]
+Step 3: Start the Expo Metro Bundler
+Start the development server:
+bash
+npm start or npx expo start
+› Press a │ open Android
+› Press w │ open web
+› Press r │ reload app
+Step 4: Testing: Once all components are running, you can test the phishing detection engine
+by pressing a or w
 
-### Phase 1: Client-Side Applications (Interceptors & UI)
+4. Testing
+4.1. Chrome Extension Test
+Open a browser tab and navigate to: http://phish-update-secure.com
+● At the UI:
+blocked instantly
+● At the backend:
+Show fast path score, LLM score, final score, status, warning reason.
+Click 'Open' to access the link. Click 'Go back' to navigate back to the default state
+Open a browser tab and navigate to: https://www.youtube.com
 
-**Web Extension (Desktop)**
-- Upgrade the existing Chrome extension to seamlessly block suspicious navigation events using Manifest V3's `chrome.webNavigation` API.
-- Create a modern, aesthetic `warning.html` and `warning.css` with a detailed explanation of why the URL was blocked.
-- Implement "Proceed anyway" and "Back to safe page" functionalities.
+● At the UI:
+allow to access immediately
+● At the backend:
+Show fast path score, final score, status.
+Click 'Open' to access the link. Click 'Go back' to navigate back to the default state
 
-**Mobile Application (React Native)**
-- Initialize a new React Native project. The mobile application demo will be run and tested locally using the Android Studio emulator.
-- Design an aesthetic, native-feeling Warning Modal (equivalent to the web warning page).
-- Implement logical stubs for handling OS-level intents (e.g., handling incoming URLs from text messages or other apps).
-
-#### [MODIFY] `plugin/background.js`
-#### [MODIFY] `plugin/warning.html`
-#### [MODIFY] `plugin/warning.css`
-#### [NEW] `mobile_app/` (React Native project structure)
-
----
-
-### Phase 2 & 4: Core Detection Engine & Scoring Logic 
-
-**Backend Expansion**
-- Restructure `backend/app.py` into a modular package or utilize FastAPI for better async support.
-- Implement rule-based algorithms (Typo-squatting, structural checks).
-- Integrate a Threat Intelligence layer (Querying against a local denylist or public APIs).
-- Add Domain WHOIS and SSL Certificate parsing.
-- Introduce dynamic analysis using Playwright to render headless instances of the URL and extract redirection chains/metadata.
-- Update Scoring weights based on the 40-50 point threshold criteria.
-- **Model Loader:** Add functionality to load the Colab-trained model (`.pkl`) to run real-time inference on incoming URLs.
-
-#### [MODIFY] `backend/app.py`
-#### [NEW] `backend/analyzer/rules.py`
-#### [NEW] `backend/analyzer/threat_intel.py`
-#### [NEW] `backend/analyzer/domain_ssl.py`
-#### [NEW] `backend/analyzer/dynamic_sandbox.py`
-
----
-
-### Phase 3: Machine Learning & LLM Integration (Colab & Local)
-
-**Machine Learning (Google Colab)**
-- We will create a Jupyter Notebook for you to upload to Colab. It will train a Random Forest / XGBoost model using your `malicious_url_dataset` and export the resulting `.pkl` file.
-
-**LLM Enabler (Local Backend)**
-- Use an LLM API (like Google Gemini) to analyze extracted Logos, Metadata, and Page content.
-- Take snapshots of the rendered page using the Python Sandbox, extract the logo/favicon, and pass them to the Vision LLM for identity matching.
-
-#### [NEW] `colab_notebooks/1_model_training.ipynb`
-#### [NEW] `backend/models/llm_prompts.py`
-
----
-
-### Phase 5 & 6: Evaluation & Testing Framework (Colab)
-
-- We will provide a second Jupyter Notebook for Evaluation.
-- You can upload your custom collected dataset, along with standard sources (PhishTank, Tranco, Alexa) to Colab, and run the notebook to measure False Positives, False Negatives, Precision, Recall, and Accuracy.
-- The notebook will output performance reports and matplotlib charts (ROC curves, bar charts) evaluating thresholds from 10 to 100 (e.g. 10, 20, 30... 100).
-
-#### [NEW] `colab_notebooks/2_evaluation_and_testing.ipynb`
-
-## Open Questions
-
-> [!NOTE]
-> 1. Do you have specific API keys you'd like to use for the LLM (e.g., OpenAI API Key, Google Gemini API Key) and Threat Intelligence (e.g., Google SafeBrowsing API Key)? If not, I can create mock functions or use free/open alternatives where possible.
-> 2. Does your current local environment support running headless browsers (Playwright) or should I use a pure request-based HTTP parsing fallback?
-
-## Verification Plan
-
-### Automated Tests (Colab)
-- Run `colab_notebooks/2_evaluation_and_testing.ipynb` in Google Colab to generate all your accuracy graphs and charts based on the dataset.
-
-### Manual Verification (Local)
-- Place the trained `model.pkl` in the local backend directory.
-- Boot up the Local Backend, Web Extension, and Mobile App.
-- Navigate to a known tricky phishing domain visually identical to a real one.
-- Verify that the warning intercept UI pops up, tells us *why* it's blocked, and that the base API correctly logs the breakdown from all layers (Rules, ML, LLM).
+4.2. Mobile App Test
+1. Open the app simulation or the web version (press a or w)
+2. Type any URL (such as http://phish-update-secure.com
+, https://www.youtube.com) in the top search box and tap Check to see the popup result
+3. The pop up result must be a safe or unsafe URL with reason. Two buttons 'Open', which
+allow user to access the link or 'Go back' to navigate back to the default state
