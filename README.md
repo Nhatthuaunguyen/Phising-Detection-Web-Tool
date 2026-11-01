@@ -1,6 +1,6 @@
-Installation Guide
+# Installation Guide
 
-1. Project Directory Structure
+## 1. Project Directory Structure
 Phising-Detection-Web-Tool/
 ├── backend/ # Flask Python Backend API
 │ ├── app.py # Main server and endpoints (/analyze, /analyze-deep)
@@ -22,7 +22,8 @@ Phising-Detection-Web-Tool/
 └── colab_notebooks/ # Training scripts & datasets
 ├── machine_learning_integration.ipynb # Notebook used to train model in Google colab
 └── model_feature_config.json # Configuration list of ML features
-2. Prerequisites & Development Environment
+
+## 2. Prerequisites & Development Environment
 To run the full suite locally, you will need the following tools installed on your development
 machine:
 Node.js Version 18.0.0 or higher ([Download Node.js](https://nodejs.org/))
@@ -30,8 +31,8 @@ Python: Version 3.9 to 3.12 ([Download Python](https://www.python.org/))
 Google Chrome: Needed to test the browser extension unpacked.
 Expo Go: To run the mobile app, install Expo Go on
 
-3. Step-by-Step Setup Guide
-3.1. Set Up and Run the Backend Server
+## 3. Step-by-Step Setup Guide
+### 3.1. Set Up and Run the Backend Server
 The backend runs on Python Flask. It is preconfigured with a trained ML model and a default
 pool of Gemini API keys for development.
 Step 1: Initialize the Virtual Environment
@@ -109,7 +110,8 @@ py app.py
 The server will boot up locally at: http://127.0.0.1:5000
 To verify it is active, open `http://127.0.0.1:5000/` in your browser. You should see a JSON
 payload listing the status as `"running"` and confirming the ML model is loaded.
-3.2. Load the Chrome Extension (Plugin)
+
+### 3.2. Load the Chrome Extension (Plugin)
 The Chrome extension monitors your active browser tabs and blocks unsafe websites by
 communicating with the backend.
 1. Open Google Chrome.
@@ -125,7 +127,7 @@ Try opening a domain in Chrome. If the backend classifies it as malicious (e.g.
 `http://fake-login-bank.net`), you will be immediately redirected to the built-in warning page
 (`warning.html`) showing the safety breakdown score.
 
-3.3. Run the Mobile Application (Expo)
+### 3.3. Run the Mobile Application (Expo)
 The mobile app provides a search-bar scanner, deep-link intercept simulation, and local
 fallback heuristics.
 
@@ -147,8 +149,8 @@ npm start or npx expo start
 Step 4: Testing: Once all components are running, you can test the phishing detection engine
 by pressing a or w
 
-4. Testing
-4.1. Chrome Extension Test
+## 4. Testing
+### 4.1. Chrome Extension Test
 Open a browser tab and navigate to: http://phish-update-secure.com
 ● At the UI:
 blocked instantly
@@ -163,7 +165,7 @@ allow to access immediately
 Show fast path score, final score, status.
 Click 'Open' to access the link. Click 'Go back' to navigate back to the default state
 
-4.2. Mobile App Test
+### 4.2. Mobile App Test
 1. Open the app simulation or the web version (press a or w)
 2. Type any URL (such as http://phish-update-secure.com
 , https://www.youtube.com) in the top search box and tap Check to see the popup result
